@@ -32,7 +32,7 @@ def extractSpellingSequenceData(res):
     train_block = res['mrk']['block_idx'][0][0][0]
     stimulus = res['mrk']['stimulus'][0][0][0]
 
-    train_mode = np.zeros(res['mrk']['mode'][0][0].shape[1])
+    train_mode = np.zeros(res['mrk']['mode'][0][0].shape[1]).astype(np.int8)
 
     train_mode[np.where(res['mrk']['mode'][0][0][0] == 1)[0]] = 1
     train_mode[np.where(res['mrk']['mode'][0][0][1] == 1)[0]] = 2
@@ -42,6 +42,21 @@ def extractSpellingSequenceData(res):
 
 
 def readCompleteMatFile(file_path):
+    """
+    see 'Gaze-independent BCI-spelling using rapid serial visual presentation (RSVP)' to understand the experiment better
+    :param file_path:
+    :return: dictionary containing the following fields:
+    - all_relevant_channels - the EEG data itself. A list of numpy array vector, each in the size of the complete
+     recording
+    - channels_names -  the EEG sensor location  name
+    - marker_positions - the index of the time stamp in which the stimuli appear to the subject
+    - target - a binary vector in the length of 'marker_positions' position field. 1 represent target
+    stimuli and 0 represent non-target stimuli
+    - train_trial - the index of the letter that is spelled (i.e if the subject is request to spell 'abc'
+    there will be 3 trials (which are duplicate due to the repetition)
+    - train_block - the index of the repetition (i.e. in Blankertz RSVP - between 1 to 10)
+    - train_mode - represent whether the recording is calibration, copy spelling or free spell (see the article)
+    """
     res = sio.loadmat(file_path)
 
     all_relevant_channels, channels_names, marker_positions, target = extractBasicData(res)
