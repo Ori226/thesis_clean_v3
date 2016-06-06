@@ -101,6 +101,28 @@ def LoadSingleSubjectPython(file_name):
     return [all_target, all_non_target]
 
 
+def LoadSingleSubjectPythonWithTime(file_name, start, end):
+    res = readCompleteMatFile(file_name);
+
+    all_data, all_tags = ExtractDataVer2(res['all_relevant_channels'], res['marker_positions'], res['target'], start, end);
+
+    trasposed_data = all_data.transpose(0, 2, 1)
+
+    trasposed_data = trasposed_data.reshape(trasposed_data.shape[0], -1)
+
+    all_target = trasposed_data[np.where(all_tags == 1)[0], :]
+    all_non_target = trasposed_data[np.where(all_tags != 1)[0], :]
+
+    subset_size = all_target.shape[0]
+    np.random.seed(0)
+
+    all_target = np.random.permutation(all_target)[0:subset_size,
+                 :]  # FromFileListToArray(target_files, 'all_target_flatten', 600)
+    all_non_target = np.random.permutation(all_non_target)[0:subset_size,
+                     :]  # FromFileListToArray(non_target_files, 'all_non_target_flatten',600 )
+
+    return [all_target, all_non_target]
+
 def LoadSingleSubjectPythonNoPermute(file_name):
     res = readCompleteMatFile(file_name);
 
