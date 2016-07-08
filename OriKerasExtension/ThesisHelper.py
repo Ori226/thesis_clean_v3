@@ -40,6 +40,17 @@ def extractSpellingSequenceData(res):
 
     return stimulus, train_trial, train_block, train_mode
 
+def extract_2D_channel_location(file_path):
+    res = sio.loadmat(file_path)
+    set_1 = [x[0] for x in res['nfo']['clab'][0][0][0]]
+
+    # electrode used in the experiment
+    set_2 = [x[0] for x in res['bbci']['bbci'][0][0]['analyze'][0][0]['features'][0][0]['clab'][0][0][0]]
+
+    valid_electrode_logical = np.in1d(np.array([x[0] for x in res['mnt']['clab'][0][0][0]]), np.array(set_2))
+    valid_electrode_location_x_y = np.hstack([res['mnt']['x'][0][0], res['mnt']['y'][0][0]])[valid_electrode_logical, :]
+    return valid_electrode_location_x_y
+
 
 def readCompleteMatFile(file_path):
     """
